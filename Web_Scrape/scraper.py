@@ -8,7 +8,7 @@ from course import Course
 
 
 
-def isClassHeader( row ):
+def isCourseHeader( row ):
 	return re.search( metadata.CLASS_ID_REGEX, row.text_content() ) is not None
 #
 
@@ -19,35 +19,44 @@ def getCRNRows( idx, rows ):
 def cleanRows( rows ):
 	return [ [ ' '.join( cell.text_content().split() ) for cell in row ] \
 			for row in rows ]
+#
+
+def cleanForCSV( val ):
+	return '|'.join( val.split( ',' ) )
 
 def rowsToDict( rows ):
 	rows = cleanRows( rows )
-	print( rows )
-	print( "String:", rows[0][0] )
-	vals = re.split( r'(?![0-9]{2,}) (?=[^0-9])', rows[0][0] )
-	print( vals )
-	for row in rows:
-		print( [ x.text_content() for x in row ] )
-	vals.extend( [ ' '.join( x.text_content().split() ) for x in row ] )
-	return { key : val for key,val in zip( Course.COURSE_KEYS, vals ) }
+	vals = re.split( r'(?<=[0-9]) +(?=[A-Z])', rows[0][0] ) + rows[0][1:]
+	vals.extend( rows[1] )
+	return { key : cleanForCSV( val ) for key,val in zip( Course.COURSE_KEYS, vals ) }
 #
 	
-def getClassMap( rows ):
-	Classes = dict()
+def getCourseMap( html ):
 
-	class_rows = []
+	Courses = dict()
+
+	data = lh.fromstring( html )
+	rows = getTable( data )
+
+	if 'No classes were found' in rows[0].text_content():
+		return None
+
+	course_rows = []
 	rows = filter( lambda x: x.text_content().strip(), rows )
 	for row in rows:
-		if isClassHeader( row ) and class_rows:
-			for idx, crn in enumerate( getCRNS( class_rows ) ):
-				crn_rows = getCRNRows( idx + metadata.CRN_START_INDEX, class_rows )
+		if isCourseHeader( row ) and course_rows:
+			for idx, crn in enumerate( getCRNS( course_rows ) ):
+				crn_rows = getCRNRows( idx + metadata.CRN_START_INDEX, course_rows )
 				if re.search( 'cancelled', crn_rows[1].text_content(), re.IGNORECASE ):
 					continue
-				Classes[ crn ] = Course( rowsToDict( crn_rows ) )
-			class_rows = []
-		class_rows.append( row )
+				course_dictionary = rowsToDict( crn_rows )
+				if len( course_dictionary.keys() ) != len( Course.COURSE_KEYS ):
+					continue
+				Courses[ crn ] = Course( course_dictionary )
+			course_rows = []
+		course_rows.append( row )
 
-	return Classes
+	return Courses
 #
 
 def getName( rows ):
@@ -68,25 +77,46 @@ def getTable( data ):
 			   .cssselect( 'tr'    )
 #
 
+def writeCSV( csv_filename, Courses ):
+	with open( csv_filename, 'w+' ) as csv:
+		csv.write( Course.getCSVHeader() )
+		for course in Courses.values():
+			csv.write( course.csvPrintable() )
+#
 
-
-
+def nextURL( new_page_index ):
+	return metadata.URL_FORMAT.format( new_page_index * metadata.COURSES_PER_PAGE )
 
 ''' MAIN '''
 def main( argv ):
-	page = requests.get( metadata.url )
-	print( page )
-
-	data = lh.fromstring( page.content )
 	
-	rows = getTable( data )
+	Courses = dict()
 
-	Classes = getClassMap( rows )
+	page_index = 0
+	url = nextURL( page_index )
+	page = requests.get( url )
+	while( page.status_code == 200 ):
 
-	for key, val in Classes.items():
-		print( val )
+		# Successful request, read new pages courses
+		CourseMap = getCourseMap( page.content )
+		if CourseMap:
+			Courses.update( getCourseMap( page.content ) )
+			page_index += 1
+			print( "Courses:", len( Courses.keys() ) )
+			url = nextURL( page_index )
+			page = requests.get( url )
+		else:
+			break
 
-	print( len( Classes.keys() ) )
+
+
+	csv_filename = argv[ 1 ]
+	writeCSV( csv_filename, Courses )
+
+
+
+	print( "COURSES FOUND:", len( Courses.keys() ) )
+	print( '\n--- END ---\n' )
 #
 
 
