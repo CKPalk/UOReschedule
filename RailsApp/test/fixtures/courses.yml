@@ -1,0 +1,29 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  coursecode: MyString
+  coursename: MyString
+  gsc: MyString
+  credits: MyString
+  tag: MyString
+  crn: 1
+  avail_seats: 1
+  max_seats: 1
+  time: MyString
+  day: MyString
+  location: MyString
+  notes: MyString
+
+two:
+  coursecode: MyString
+  coursename: MyString
+  gsc: MyString
+  credits: MyString
+  tag: MyString
+  crn: 1
+  avail_seats: 1
+  max_seats: 1
+  time: MyString
+  day: MyString
+  location: MyString
+  notes: MyString

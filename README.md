@@ -6,3 +6,7 @@ Redesign of University of Oregon's Class Schedule Website
 
 ## After
 Coming soon...
+
+--
+# How I did it
+
