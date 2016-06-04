@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  online: false
+  seats_available: 1
+  seats_max: 1
+  building: MyString
+  room: MyString
+
+two:
+  online: false
+  seats_available: 1
+  seats_max: 1
+  building: MyString
+  room: MyString

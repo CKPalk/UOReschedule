@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  crn: 1
+  course_name: MyString
+  course_num: 1
+  type_tag: MyString
+  max_credits: 1
+  min_credits: 1
+  instructor: MyString
+  notes: MyString
+
+two:
+  crn: 1
+  course_name: MyString
+  course_num: 1
+  type_tag: MyString
+  max_credits: 1
+  min_credits: 1
+  instructor: MyString
+  notes: MyString
