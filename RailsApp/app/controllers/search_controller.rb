@@ -5,7 +5,7 @@ class SearchController < ApplicationController
 
   def results
     @courses = Course.where cleanQueryHash
-    if @courses
+    if not @courses
       # Redirect/render a courses not found page, possible redirect to :back
       # Looking into notice or flash events which can pass a message between views
       # Redirect to search and show that no courses were found
