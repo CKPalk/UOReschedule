@@ -1,10 +1,15 @@
 Rails.application.routes.draw do
-  resources :courses
+
+
+  # Search pages
+  get 'search/', to: 'search#index'
+  get 'search/results'
+
+  resources :courses, only: [:index, :show]
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  # root 'welcome#index'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

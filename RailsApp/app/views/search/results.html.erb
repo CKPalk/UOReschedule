@@ -1,0 +1,17 @@
+<h1>Search#results</h1>
+<p>Find me in app/views/search/results.html.erb</p>
+
+<ul class='courses'>
+	<% @courses.each do |course| %>
+		<li>
+			<div class='course_wrapper'>
+				<div class='course_title'>
+					<strong><%= course.crn.to_s + ": " + course.coursename %></strong>
+				</div>
+				<%= "Location: " + course.location if course.location %></br>
+				<%= "Instructor: " + course.instructor %></br>
+				<%= course.avail_seats.to_s + " / " + course.max_seats.to_s + " seats"%>
+			</div>
+		</li></br>
+	<% end %>
+</ul>
