@@ -85,7 +85,7 @@ def writeCSV( csv_filename, Courses ):
 #
 
 def nextURL( new_page_index ):
-	return metadata.URL_FORMAT.format( new_page_index * metadata.COURSES_PER_PAGE )
+	return metadata.URL_FORMAT.format( metadata.TERM_CODE, new_page_index * metadata.COURSES_PER_PAGE )
 
 ''' MAIN '''
 def main( argv ):
