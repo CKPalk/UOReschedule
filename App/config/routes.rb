@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
 
 
+  get 'search' => 'searches#index'
+  get 'search/results' => 'searches#results'
+
   resources :courses, only: [:index]
-  #get 'courses/index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -11,74 +11,63 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160604163258) do
+ActiveRecord::Schema.define(version: 20160604034302) do
 
   create_table "courses", force: :cascade do |t|
-    t.integer  "crn",                 null: false
-    t.string   "course_name",         null: false
-    t.integer  "course_num",          null: false
-    t.string   "type_tag"
-    t.integer  "max_credits",         null: false
-    t.integer  "min_credits"
-    t.string   "instructor"
-    t.string   "notes"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
-    t.integer  "datetime_id",         null: false
-    t.integer  "department_id",       null: false
-    t.integer  "group_satisfying_id", null: false
-    t.integer  "location_id",         null: false
+    t.integer "crn",         null: false
+    t.string  "course_name", null: false
+    t.integer "course_num",  null: false
+    t.string  "type_tag"
+    t.integer "max_credits", null: false
+    t.integer "min_credits"
+    t.string  "instructor"
+    t.string  "notes"
   end
-
-  add_index "courses", ["datetime_id"], name: "index_courses_on_datetime_id"
-  add_index "courses", ["department_id"], name: "index_courses_on_department_id"
-  add_index "courses", ["group_satisfying_id"], name: "index_courses_on_group_satisfying_id"
-  add_index "courses", ["location_id"], name: "index_courses_on_location_id"
 
   create_table "datetimes", force: :cascade do |t|
-    t.integer  "course_id",  null: false
-    t.time     "start_time"
-    t.time     "end_time"
-    t.boolean  "monday",     null: false
-    t.boolean  "tuesday",    null: false
-    t.boolean  "wednesday",  null: false
-    t.boolean  "thursday",   null: false
-    t.boolean  "friday",     null: false
-    t.boolean  "saturday",   null: false
-    t.boolean  "sunday",     null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer "course_id"
+    t.time    "start_time"
+    t.time    "end_time"
+    t.boolean "monday",     null: false
+    t.boolean "tuesday",    null: false
+    t.boolean "wednesday",  null: false
+    t.boolean "thursday",   null: false
+    t.boolean "friday",     null: false
+    t.boolean "saturday",   null: false
+    t.boolean "sunday",     null: false
   end
+
+  add_index "datetimes", ["course_id"], name: "index_datetimes_on_course_id"
 
   create_table "departments", force: :cascade do |t|
-    t.integer  "course_id",  null: false
-    t.string   "code",       null: false
-    t.string   "full_name",  null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer "course_id"
+    t.string  "code",      null: false
+    t.string  "full_name", null: false
   end
+
+  add_index "departments", ["course_id"], name: "index_departments_on_course_id"
 
   create_table "group_satisfyings", force: :cascade do |t|
-    t.integer  "course_id",  null: false
-    t.boolean  "AL",         null: false
-    t.boolean  "SCC",        null: false
-    t.boolean  "SC",         null: false
-    t.boolean  "AC",         null: false
-    t.boolean  "IP",         null: false
-    t.boolean  "IC",         null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer "course_id"
+    t.boolean "AL",        null: false
+    t.boolean "SCC",       null: false
+    t.boolean "SC",        null: false
+    t.boolean "AC",        null: false
+    t.boolean "IP",        null: false
+    t.boolean "IC",        null: false
   end
 
+  add_index "group_satisfyings", ["course_id"], name: "index_group_satisfyings_on_course_id"
+
   create_table "locations", force: :cascade do |t|
-    t.integer  "course_id",       null: false
-    t.boolean  "online",          null: false
-    t.integer  "seats_available", null: false
-    t.integer  "seats_max",       null: false
-    t.string   "building"
-    t.string   "room"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.integer "course_id"
+    t.boolean "online",          null: false
+    t.integer "seats_available", null: false
+    t.integer "seats_max",       null: false
+    t.string  "building"
+    t.string  "room"
   end
+
+  add_index "locations", ["course_id"], name: "index_locations_on_course_id"
 
 end
