@@ -1,5 +1,7 @@
 <h1>Searches#index</h1>
 <p>Find me in app/views/searches/index.html.erb</p>
 
-<%= form_tag( "/search/results", method: "get" ) do %>
-  <%= label_tag( 
+<%= form_tag( "/search/results", method: "get" ) do |f| %>
+  <%= f.label :subject %>
+  <%= f.collection_select :subject %>
+<% end %>

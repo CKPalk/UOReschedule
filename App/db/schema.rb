@@ -14,11 +14,12 @@
 ActiveRecord::Schema.define(version: 20160604034302) do
 
   create_table "courses", force: :cascade do |t|
-    t.integer "crn",         null: false
-    t.string  "course_name", null: false
-    t.integer "course_num",  null: false
+    t.integer "crn",           null: false
+    t.string  "course_name",   null: false
+    t.integer "course_num",    null: false
+    t.integer "department_id"
     t.string  "type_tag"
-    t.integer "max_credits", null: false
+    t.integer "max_credits",   null: false
     t.integer "min_credits"
     t.string  "instructor"
     t.string  "notes"
@@ -28,33 +29,29 @@ ActiveRecord::Schema.define(version: 20160604034302) do
     t.integer "course_id"
     t.time    "start_time"
     t.time    "end_time"
-    t.boolean "monday",     null: false
-    t.boolean "tuesday",    null: false
-    t.boolean "wednesday",  null: false
-    t.boolean "thursday",   null: false
-    t.boolean "friday",     null: false
-    t.boolean "saturday",   null: false
-    t.boolean "sunday",     null: false
+    t.boolean "days_announced", null: false
+    t.boolean "monday"
+    t.boolean "tuesday"
+    t.boolean "wednesday"
+    t.boolean "thursday"
+    t.boolean "friday"
+    t.boolean "saturday"
+    t.boolean "sunday"
   end
 
   add_index "datetimes", ["course_id"], name: "index_datetimes_on_course_id"
 
   create_table "departments", force: :cascade do |t|
-    t.integer "course_id"
-    t.string  "code",      null: false
-    t.string  "full_name", null: false
+    t.string "code",      null: false
+    t.string "full_name", null: false
   end
-
-  add_index "departments", ["course_id"], name: "index_departments_on_course_id"
 
   create_table "group_satisfyings", force: :cascade do |t|
     t.integer "course_id"
-    t.boolean "AL",        null: false
-    t.boolean "SCC",       null: false
-    t.boolean "SC",        null: false
-    t.boolean "AC",        null: false
-    t.boolean "IP",        null: false
-    t.boolean "IC",        null: false
+    t.boolean "AC",         null: false
+    t.boolean "IP",         null: false
+    t.boolean "IC",         null: false
+    t.integer "group_code"
   end
 
   add_index "group_satisfyings", ["course_id"], name: "index_group_satisfyings_on_course_id"

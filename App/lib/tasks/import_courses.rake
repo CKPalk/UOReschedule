@@ -21,13 +21,26 @@ end
 
 task import: :environment do
 
+
+  department_map = {}
+  File.open( "departments_201601.csv", "r" ).each do |line|
+    dep_code, dep_name = line.split(",")
+    department_map[ dep_code.strip ] = dep_name.strip
+  end
+
+  saved_lines = 0
+  unsaved_lines = 0
+
   File.open( "courses_201601.csv", "r" ).each_with_index do |line, index|
     next if index == 0
 
-    #print "Adding \"#{line}\""
-
     coursecode, coursename, gsc, credits, tag, crn, avail_seats, \
       max_seats, time, day, location, instructor, notes = line.strip.split(",")
+
+    location.upcase!
+    day.downcase!
+    coursecode.upcase!
+
     dept_code, course_num = coursecode.split(" ")
 
 
@@ -46,15 +59,17 @@ task import: :environment do
       new_course.min_credits      = parsedCredits[0]
       new_course.max_credits      = parsedCredits[1]
     end
-    new_course.instructor         = instructor
+    new_course.instructor         = instructor if !(instructor.include? "STAFF" or instructor.include? "tba")
     new_course.notes              = notes
 
     # SETUP LOCATION
     new_location                  = Location.new
     new_location.seats_available  = avail_seats
     new_location.seats_max        = max_seats
-    if location == "WEB"
+    if location.include? "WEB"
       new_location.online         = true
+    elsif location.include? "TBA" or location.empty?
+      new_location.online         = false
     else
       new_location.online         = false
       loc_split = location.split(" ")
@@ -66,59 +81,64 @@ task import: :environment do
         new_location.room         = loc_split[1]
       else
         puts "I don't know how to handle location: #{location}"
+        unsaved_lines += 1
         next
       end
     end
 
-    print "Location"
     new_course.location           = new_location
     # DONE LOCATION
 
 
     # SETUP DEPARTMENT
     new_department                = Department.new
-    new_department.code           = "code"
-    new_department.full_name      = "full name"
+    new_department.code           = dept_code
+    new_department.full_name      = department_map[ dept_code ]
 
-    print " | Department"
     new_course.department         = new_department
     # DONE DEPARTMENT
 
 
     # SETUP DATETIME
     new_datetime                  = Datetime.new
-    new_datetime.start_time       = 000000
-    new_datetime.end_time         = 000000
-    new_datetime.monday           = true
-    new_datetime.tuesday          = false
-    new_datetime.wednesday        = true
-    new_datetime.thursday         = false
-    new_datetime.friday           = true
-    new_datetime.saturday         = false
-    new_datetime.sunday           = false
+    if !time.include? "tba"
+      start_time_temp, end_time_temp = time.split("-")
+      new_datetime.start_time       = start_time_temp
+      new_datetime.end_time         = end_time_temp
+    end
+    has_days = !(day.empty? or day.include? "tba")
+    new_datetime.days_announced   = has_days
+    if has_days
+      new_datetime.monday           = day.include? "m"
+      new_datetime.tuesday          = day.include? "t"
+      new_datetime.wednesday        = day.include? "w"
+      new_datetime.thursday         = day.include? "r"
+      new_datetime.friday           = day.include? "f"
+      new_datetime.saturday         = day.include? "s"
+      new_datetime.sunday           = day.include? "u"
+    end
 
-    print " | Datetime"
     new_course.datetime           = new_datetime
     # DONE DATETIME
 
 
     # SETUP GROUP_SATISFYING
     new_group_satisfying          = GroupSatisfying.new
-    new_group_satisfying.AL       = false
-    new_group_satisfying.SCC      = false
-    new_group_satisfying.SC       = false
-    new_group_satisfying.AC       = false
-    new_group_satisfying.IP       = false
-    new_group_satisfying.IC       = false
+    
+    new_group_satisfying.AC       = gsc.include? "AC"
+    new_group_satisfying.IP       = gsc.include? "IP"
+    new_group_satisfying.IC       = gsc.include? "IC"
+    new_group_satisfying.group_code = gsc[/\d/].to_i if gsc =~ /\d/
 
-    print " | Group Satisfying"
     new_course.group_satisfying   = new_group_satisfying
     # DONE GROUP SATISFYING
 
 
     new_course.save
-    puts " >> Course #{index} saved"
+    saved_lines += 1
 
   end
+
+  puts "Courses saved #{saved_lines}/#{saved_lines + unsaved_lines}"
 
 end

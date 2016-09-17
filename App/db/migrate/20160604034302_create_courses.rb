@@ -5,6 +5,7 @@ class CreateCourses < ActiveRecord::Migration
       t.integer :crn, :null => false
       t.string :course_name, :null => false
       t.integer :course_num, :null => false
+      t.references :department
       t.string :type_tag
       t.integer :max_credits, :null => false
       t.integer :min_credits
@@ -17,29 +18,27 @@ class CreateCourses < ActiveRecord::Migration
       t.belongs_to :course, index: true
       t.time :start_time
       t.time :end_time
-      t.boolean :monday, :null => false
-      t.boolean :tuesday, :null => false
-      t.boolean :wednesday, :null => false
-      t.boolean :thursday, :null => false
-      t.boolean :friday, :null => false
-      t.boolean :saturday, :null => false
-      t.boolean :sunday, :null => false
+      t.boolean :days_announced, :null => false
+      t.boolean :monday
+      t.boolean :tuesday
+      t.boolean :wednesday
+      t.boolean :thursday
+      t.boolean :friday
+      t.boolean :saturday
+      t.boolean :sunday
     end
 
     create_table :departments do |t|
-      t.belongs_to :course, index: true
       t.string :code, :null => false
       t.string :full_name, :null => false
     end
 
     create_table :group_satisfyings do |t|
       t.belongs_to :course, index: true
-      t.boolean :AL, :null => false
-      t.boolean :SCC, :null => false
-      t.boolean :SC, :null => false
       t.boolean :AC, :null => false
       t.boolean :IP, :null => false
       t.boolean :IC, :null => false
+      t.integer :group_code
     end
 
     create_table :locations do |t|

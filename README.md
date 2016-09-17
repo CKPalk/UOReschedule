@@ -11,4 +11,5 @@ Coming soon...
 # How I did it
 
 I started by creating an EER diagram to represent my proposed database.
+
 ![screenshot](Images/EERDiagram.png)
